@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1b0a16">
+  <meta name="description" content="A little Diwali greeting, made with love for you and your family.">
+  <meta property="og:title" content="Happy Diwali! 🪔 A little greeting for you">
+  <meta property="og:description" content="Light the diyas, make a rangoli and receive Maa Lakshmi's blessings.">
+  <title>Happy Diwali 🪔 A Little Greeting for You</title>
+  <style>
+/* =========================================================
+   SHUBH DEEPAVALI — Lakshmi Pujan: design tokens and reset
+   ========================================================= */
+:root {
+  color-scheme: dark;
+  --night: #1b0a16;
+  --cream: #fff4dc;
+  --muted: #dcc6bf;
+  --gold: #f6c978;
+  --marigold: #ffa62b;
+  --rose: #f0a7a4;
+  --glass: rgba(255, 240, 215, .07);
+  --line: rgba(255, 210, 150, .24);
+  --shadow: 0 24px 80px rgba(0, 0, 0, .32);
+  --glow: 0;
+  font-family: Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--night); }
+body {
+  min-height: 100vh; margin: 0; overflow-x: hidden; color: var(--cream);
+  background: radial-gradient(ellipse at 50% 0%, #4d1f35 0%, #2a0f22 40%, #14070f 100%);
+}
+button { font: inherit; }
+button:focus-visible { outline: 2px solid #fff0bd; outline-offset: 5px; }
+.is-hidden { display: none !important; }
+
+/* =========================================================
+   Amavasya sky: stars, sparkles, akash kandils, room glow
+   ========================================================= */
+.sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+.star { position: absolute; color: #ffe4aa; animation: twinkle 3s ease-in-out infinite; }
+.star--1 { top: 16%; left: 12%; font-size: 19px; }
+.star--2 { top: 26%; left: 84%; animation-delay: .7s; }
+.star--3 { top: 60%; left: 7%; animation-delay: 1.3s; }
+.star--4 { top: 74%; right: 10%; font-size: 20px; animation-delay: .4s; }
+.star--5 { top: 42%; right: 22%; animation-delay: 1.8s; }
+.star--6 { top: 11%; left: 46%; animation-delay: 2.3s; }
+.sparkles { position: absolute; inset: 0; }
+.sparkle {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #ffe6b2;
+  box-shadow: 0 0 12px 3px rgba(255, 206, 122, .4); animation: drift 7s ease-in-out infinite;
+}
+@keyframes twinkle { 0%,100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1.25); } }
+@keyframes drift { 0%,100% { transform: translate3d(0,0,0); opacity: .2; } 50% { transform: translate3d(10px,-22px,0); opacity: .9; } }
+
+/* Akash kandil: a hanging lantern on a string */
+.kandil { position: absolute; top: 0; width: 46px; transform-origin: 50% 0; animation: sway 5s ease-in-out infinite; }
+.kandil::before { content: ""; display: block; width: 1px; height: var(--string, 90px); margin: 0 auto; background: rgba(255, 220, 170, .35); }
+.kandil__body {
+  display: block; width: 34px; height: 34px; margin: 6px auto 0; transform: rotate(45deg); border-radius: 4px;
+  background: linear-gradient(135deg, #ffd27a, #ff7a3d 60%, #c2362f);
+  box-shadow: 0 0 30px 8px rgba(255, 140, 60, .35), inset 0 0 12px rgba(255, 245, 200, .7);
+}
+.kandil__tassel { display: block; width: 14px; height: 30px; margin: 4px auto 0; background: repeating-linear-gradient(90deg, #ffb347 0 2px, transparent 2px 4px); border-radius: 0 0 6px 6px; }
+.kandil--1 { left: 6%; --string: 120px; }
+.kandil--2 { right: 7%; --string: 70px; animation-delay: -2s; }
+.kandil--3 { right: 26%; --string: 150px; animation-delay: -3.5s; transform: scale(.7); opacity: .75; }
+@keyframes sway { 0%,100% { rotate: -4deg; } 50% { rotate: 4deg; } }
+
+/* Grows warmer as the seven diyas are lit */
+.room-glow {
+  position: fixed; inset: 0; pointer-events: none; opacity: var(--glow); transition: opacity 1s ease;
+  background: radial-gradient(ellipse at 50% 70%, rgba(255, 160, 70, .32), rgba(255, 120, 60, .1) 45%, transparent 75%);
+}
+.fireworks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+/* Marigold garland along the top with hanging strands */
+.garland {
+  position: absolute; top: 0; left: 0; right: 0; height: 22px; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(circle at 11px 11px, #ffcf3f 0 8px, transparent 9px) 0 0 / 22px 22px repeat-x,
+    radial-gradient(circle at 11px 11px, #f77f1e 0 8px, transparent 9px) 11px 4px / 22px 22px repeat-x;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.3));
+}
+.strand {
+  position: absolute; top: 14px; width: 16px; height: var(--len, 90px); transform-origin: 50% 0; animation: sway 4s ease-in-out infinite;
+  background: radial-gradient(circle at 8px 8px, #ffc93c 0 7px, transparent 8px) 0 0 / 16px 15px repeat-y;
+}
+.strand::after { content: ""; position: absolute; left: 3px; bottom: -10px; width: 10px; height: 14px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: #3f8a52; }
+.strand:nth-child(even) { background-image: radial-gradient(circle at 8px 8px, #f7811f 0 7px, transparent 8px); }
+.strand--1 { left: 3%; --len: 75px; }
+.strand--2 { left: 24%; --len: 50px; animation-delay: -1s; }
+.strand--3 { left: 50%; --len: 62px; animation-delay: -2s; }
+.strand--4 { right: 24%; --len: 50px; animation-delay: -1.5s; }
+.strand--5 { right: 3%; --len: 75px; animation-delay: -.5s; }
+
+/* =========================================================
+   Page frame and screen transitions
+   ========================================================= */
+.page {
+  position: relative; z-index: 1; width: min(760px, calc(100% - 32px));
+  min-height: calc(100vh - 76px); margin: 0 auto; padding-top: 86px; display: flex; flex-direction: column;
+}
+.topline, .footer {
+  display: flex; justify-content: space-between; gap: 12px; padding: 23px 2px;
+  color: rgba(255, 231, 194, .56); font: 10px/1.4 Arial, sans-serif; letter-spacing: .19em;
+}
+.footer { position: relative; z-index: 1; justify-content: center; text-align: center; padding-top: 8px; }
+.screen {
+  display: none; width: 100%; flex: 1; min-height: 650px; padding: 40px 30px 56px;
+  align-items: center; flex-direction: column; justify-content: center; text-align: center;
+  animation: screenIn .8s cubic-bezier(.2,.7,.2,1) both;
+}
+.screen--active { display: flex; }
+.screen:not(.screen--active), .screen[hidden] { display: none !important; }
+@keyframes screenIn { from { opacity: 0; transform: translateY(18px) scale(.99); } to { opacity: 1; transform: none; } }
+.eyebrow { color: var(--gold); font: 10px/1.5 Arial, sans-serif; letter-spacing: .28em; margin-bottom: 22px; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2 { font-weight: 400; line-height: 1.13; letter-spacing: -.035em; }
+h1 { font-size: clamp(42px, 8vw, 68px); margin-bottom: 22px; }
+h2 { font-size: clamp(32px, 6vw, 50px); margin-bottom: 16px; }
+h1 em, h2 em { color: var(--gold); font-style: italic; }
+.intro, .section-copy { color: var(--muted); font-size: 16px; line-height: 1.85; }
+.prompt, .hint { color: #e7cfa9; font-size: 14px; letter-spacing: .025em; margin: 18px 0 22px; }
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+.button {
+  min-height: 50px; border: 1px solid transparent; border-radius: 999px; padding: 0 25px;
+  cursor: pointer; transition: transform .25s ease, box-shadow .25s ease;
+  font: 12px/1 Arial, sans-serif; letter-spacing: .06em;
+}
+.button:hover { transform: translateY(-3px); }
+.button:active { transform: scale(.98); }
+.button--gold { color: #3a1f15; background: linear-gradient(135deg, #ffe7b1, #f0a94e); box-shadow: 0 10px 30px rgba(240, 150, 70, .25); }
+.button--gold:hover { box-shadow: 0 14px 38px rgba(240, 150, 70, .4); }
+.button--gold span { margin-left: 12px; font-size: 17px; }
+
+/* =========================================================
+   Welcome diya
+   ========================================================= */
+.hero-diya { position: relative; width: 190px; height: 175px; margin: 16px auto 4px; }
+.diya-glow { position: absolute; width: 170px; height: 125px; left: 10px; bottom: 6px; border-radius: 50%; background: rgba(255, 160, 60, .2); filter: blur(24px); }
+.diya-bowl {
+  position: absolute; width: 142px; height: 62px; left: 50%; bottom: 20px; transform: translateX(-50%);
+  border-radius: 12px 12px 75px 75px; border-bottom: 8px solid #a3402d;
+  background: linear-gradient(180deg, #f8c77b, #c25a37 75%); box-shadow: 0 12px 24px rgba(0,0,0,.25);
+}
+.flame, .mini-diya__flame, .thali__flame {
+  position: absolute; z-index: 2; width: 26px; height: 48px; left: 50%; bottom: 83px;
+  transform: translateX(-50%); border-radius: 80% 10% 80% 80%;
+  background: radial-gradient(ellipse at 65% 70%, #fffbd7 0 18%, #ffd45f 35%, #f18a36 72%, transparent 74%);
+  filter: drop-shadow(0 0 13px #ffbd56); animation: flame 1.15s ease-in-out infinite;
+}
+.wick { position: absolute; z-index: 3; left: 50%; bottom: 75px; width: 3px; height: 13px; background: #49271f; transform: translateX(-50%); }
+@keyframes flame { 0%,100% { transform: translateX(-50%) rotate(-4deg) scaleY(1); } 50% { transform: translateX(-50%) rotate(5deg) scaleY(1.1); } }
+
+/* =========================================================
+   Rangoli
+   ========================================================= */
+.rangoli { width: min(320px, 82vw); aspect-ratio: 1; border: 0; padding: 0; background: transparent; cursor: pointer; margin: 6px 0 0; border-radius: 50%; }
+.rangoli svg { width: 100%; height: 100%; overflow: visible; }
+.rangoli-layer { transform-box: fill-box; transform-origin: center; opacity: 0; transform: scale(.3) rotate(-40deg); transition: opacity .8s ease, transform 1s cubic-bezier(.3,1.4,.5,1); }
+.rangoli-layer.is-on { opacity: 1; transform: none; }
+.rangoli.is-complete svg { animation: slowSpin 70s linear infinite; filter: drop-shadow(0 0 18px rgba(255, 170, 80, .3)); }
+@keyframes slowSpin { to { transform: rotate(360deg); } }
+
+/* =========================================================
+   Seven diyas
+   ========================================================= */
+.diya-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 10px; margin: 26px 0 6px; max-width: 560px; }
+.mini-diya { position: relative; width: 62px; height: 78px; border: 0; padding: 0; background: transparent; cursor: pointer; transition: transform .25s; }
+.mini-diya:hover { transform: translateY(-4px); }
+.mini-diya__bowl {
+  position: absolute; left: 50%; bottom: 6px; width: 54px; height: 24px; transform: translateX(-50%);
+  border-radius: 6px 6px 30px 30px; border-bottom: 4px solid #a3402d; background: linear-gradient(180deg, #f8c77b, #c25a37 75%);
+}
+.mini-diya__flame { width: 14px; height: 26px; bottom: 30px; opacity: .08; transition: opacity .5s; }
+.mini-diya__halo { position: absolute; left: 50%; bottom: 10px; width: 70px; height: 60px; transform: translateX(-50%); border-radius: 50%; background: rgba(255, 170, 70, 0); filter: blur(14px); transition: background .6s; }
+.mini-diya.is-lit .mini-diya__flame { opacity: 1; }
+.mini-diya.is-lit .mini-diya__halo { background: rgba(255, 170, 70, .35); }
+.mini-diya.is-lit { cursor: default; }
+.diya-wish { min-height: 26px; color: var(--gold); font-size: 17px; font-style: italic; margin: 18px 0 22px; }
+
+/* =========================================================
+   Lakshmi Pujan: toran, doors, shrine, aarti, footprints
+   ========================================================= */
+.shrine-wrap { position: relative; width: 260px; margin: 12px 0 0; }
+.toran { position: relative; z-index: 3; display: flex; justify-content: space-between; padding: 0 4px; margin-bottom: -10px; }
+.toran::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; height: 3px; background: #7a3b22; border-radius: 3px; }
+.toran span { position: relative; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #ffe066, #f59f00); box-shadow: 0 0 8px rgba(255, 180, 60, .5); }
+.toran span:nth-child(even) { top: 10px; background: radial-gradient(circle, #ffa94d, #e8590c); }
+.toran span::after { content: ""; position: absolute; left: 6px; top: 18px; width: 8px; height: 14px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: #3f8a52; }
+.door-frame {
+  position: relative; display: block; width: 260px; height: 310px; padding: 0; cursor: pointer; overflow: hidden;
+  border: 10px solid #7a3b22; border-radius: 130px 130px 8px 8px; perspective: 900px;
+  background: radial-gradient(ellipse at 50% 55%, #6b2a3c, #3a1424 70%);
+  box-shadow: 0 0 0 2px rgba(246, 201, 120, .35), var(--shadow);
+}
+.shrine { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.shrine__halo { position: absolute; width: 230px; height: 230px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 220, 140, .75), rgba(255, 170, 70, 0) 70%); opacity: .2; transition: opacity 1.2s; }
+.shrine__art { position: relative; width: 190px; }
+.shrine__photo { position: absolute; inset: 22px 18px 10px; width: calc(100% - 36px); height: calc(100% - 32px); object-fit: contain; }
+.door {
+  position: absolute; top: 0; bottom: 0; width: 50%; z-index: 2;
+  background: linear-gradient(180deg, #a85a32, #6e2d18); transition: transform 1.8s cubic-bezier(.5,0,.2,1);
+}
+.door--left { left: 0; transform-origin: left center; border-right: 1px solid rgba(0,0,0,.35); }
+.door--right { right: 0; transform-origin: right center; border-left: 1px solid rgba(255,220,170,.15); }
+.door__panel { position: absolute; inset: 70px 16px 24px; border: 2px solid rgba(255, 210, 140, .5); border-radius: 6px; box-shadow: inset 0 0 0 6px rgba(0,0,0,.08); }
+.door__knob { position: absolute; top: 55%; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2b8, #c8893e); }
+.door--left .door__knob { right: 10px; }
+.door--right .door__knob { left: 10px; }
+.door-frame.is-open { cursor: default; }
+.door-frame.is-open .door--left { transform: rotateY(-100deg); }
+.door-frame.is-open .door--right { transform: rotateY(100deg); }
+.door-frame.is-open .shrine__halo { opacity: 1; animation: haloPulse 3s ease-in-out infinite 1.2s; }
+@keyframes haloPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.aarti-orbit { position: absolute; left: 50%; top: 58%; width: 0; height: 0; z-index: 4; opacity: 0; transition: opacity .6s; }
+.thali {
+  position: absolute; left: 92px; top: -27px; width: 54px; height: 54px; border-radius: 50%;
+  background: radial-gradient(circle, #ffe9a8 0 35%, #e0a94a 60%, #b07126); box-shadow: 0 0 22px rgba(255, 190, 90, .6), inset 0 0 0 3px #c8893e;
+}
+.thali__flame { width: 14px; height: 26px; bottom: 26px; }
+.thali__dot { position: absolute; width: 9px; height: 9px; border-radius: 50%; }
+.thali__dot--1 { left: 10px; top: 30px; background: #d6336c; }
+.thali__dot--2 { right: 10px; top: 30px; background: #fff7e0; }
+.shrine-wrap.is-aarti .aarti-orbit { opacity: 1; animation: orbit 2.4s linear 3; }
+.shrine-wrap.is-aarti .thali { animation: counterOrbit 2.4s linear 3; }
+@keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes counterOrbit { to { transform: rotate(-360deg); } }
+
+.footprints { display: flex; justify-content: center; align-items: flex-start; gap: 12px; height: 50px; margin: 18px 0 0; }
+.footprints svg { width: 17px; height: 30px; fill: #e2665c; opacity: 0; translate: 0 8px; }
+.footprints svg:nth-child(odd) { scale: -1 1; margin-top: 14px; }
+.footprints.is-walking svg { animation: stepIn .6s ease forwards; animation-delay: calc(1.2s + var(--i) * .35s); }
+@keyframes stepIn { to { opacity: .85; translate: 0 0; } }
+.mantra { color: var(--gold); font-size: 20px; margin: 10px 0 0; animation: screenIn 1s both; }
+
+/* Particles: sparkles, coins, petals */
+.particle { position: fixed; z-index: 6; pointer-events: none; line-height: 1; will-change: transform, opacity; }
+.particle--coin { border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff4c2, #e7b34f 55%, #b47a2a); box-shadow: 0 0 10px rgba(255, 205, 110, .6); }
+
+/* =========================================================
+   Five days of Diwali: flip cards
+   ========================================================= */
+.day-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; width: min(660px, 100%); margin: 10px 0 0; }
+.day-card { width: 118px; height: 168px; padding: 0; border: 0; background: transparent; cursor: pointer; perspective: 800px; }
+.day-card__inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3,1.3,.5,1); }
+.day-card.is-flipped .day-card__inner { transform: rotateY(180deg); }
+.day-card__face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 10px; border-radius: 18px; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: center;
+}
+.day-card__front { color: var(--cream); border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255, 190, 110, .18), rgba(255, 240, 215, .05)); box-shadow: var(--shadow); }
+.day-card__num { color: var(--gold); font: 10px/1 Arial, sans-serif; letter-spacing: .2em; }
+.day-card__icon { font-size: 30px; }
+.day-card__name { font-size: 15px; line-height: 1.25; }
+.day-card__back { transform: rotateY(180deg); color: #5a3528; background: linear-gradient(145deg, #fff5df, #f3dbb5); font-size: 12.5px; line-height: 1.5; box-shadow: 0 14px 40px rgba(0,0,0,.3); }
+.day-card__back strong { color: #a5492f; font-size: 13px; font-weight: 400; font-style: italic; }
+
+/* =========================================================
+   Letter
+   ========================================================= */
+.letter-card {
+  width: min(560px, 100%); padding: 34px clamp(22px, 6vw, 48px); margin: 0 0 25px;
+  color: #4a302c; text-align: left; border: 1px solid rgba(255,255,255,.55); border-radius: 5px 22px 5px 22px;
+  background: linear-gradient(145deg, #fff5df, #f3dbb5); box-shadow: 0 25px 70px rgba(0,0,0,.3); transform: rotate(-.5deg);
+}
+.letter-card__ornament { color: #c0703f; font-size: 30px; text-align: center; margin-bottom: 8px; }
+.letter-card h2 { font-size: 30px; color: #7a3b2e; }
+.typed-message { min-height: 250px; white-space: pre-line; font-size: 16px; line-height: 1.9; color: #63443b; }
+.letter-card__sign { text-align: right; color: #8b5a49; line-height: 1.7; margin-top: 18px; }
+.letter-card__sign strong { font-size: 22px; color: #a5492f; }
+
+/* =========================================================
+   Finale
+   ========================================================= */
+#finale { cursor: pointer; }
+.final-diyas { display: flex; gap: 28px; font-size: 36px; margin-bottom: 28px; filter: drop-shadow(0 0 14px rgba(255,184,86,.4)); }
+.final-diyas span:nth-child(2) { transform: translateY(-13px); }
+.final-message, .final-love { max-width: 540px; color: var(--muted); line-height: 1.85; font-size: 16px; }
+.final-love { color: #ffd9b0; margin: 18px 0 22px; }
+.signature { color: #e8c7a4; line-height: 1.7; font-style: italic; }
+.signature strong { font-size: 30px; color: var(--gold); font-style: normal; }
+.finale-hint { margin: 22px 0 0; opacity: .8; }
+.final-actions { display: flex; justify-content: center; margin-top: 24px; }
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 600px) {
+  .page { width: min(100% - 20px, 520px); min-height: calc(100vh - 60px); padding-top: 60px; }
+  .strand--1, .strand--5 { --len: 45px; } .strand--2, .strand--4 { --len: 30px; } .strand--3 { --len: 38px; }
+  .topline { font-size: 8px; letter-spacing: .13em; padding: 17px 2px; }
+  .screen { min-height: 610px; padding: 34px 8px 45px; }
+  .intro, .section-copy { font-size: 14px; }
+  .kandil--3 { display: none; }
+  .kandil--1 { --string: 70px; } .kandil--2 { --string: 40px; }
+  .mini-diya { width: 54px; }
+  .diya-wish { font-size: 15px; }
+  .typed-message { min-height: 280px; font-size: 14px; }
+  .letter-card h2 { font-size: 25px; }
+  .final-diyas { font-size: 29px; gap: 18px; }
+  .footer { font-size: 8px; letter-spacing: .12em; }
+  .day-grid { gap: 10px; }
+  .day-card { width: 104px; height: 160px; }
+  .day-card__back { font-size: 11.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <span class="star star--1">✦</span><span class="star star--2">✧</span><span class="star star--3">✦</span>
+    <span class="star star--4">✧</span><span class="star star--5">✦</span><span class="star star--6">✧</span>
+    <div class="sparkles" id="sparkles"></div>
+    <div class="kandil kandil--1"><span class="kandil__body"></span><span class="kandil__tassel"></span></div>
+    <div class="kandil kandil--2"><span class="kandil__body"></span><span class="kandil__tassel"></span></div>
+    <div class="kandil kandil--3"><span class="kandil__body"></span><span class="kandil__tassel"></span></div>
+  </div>
+  <div class="room-glow" aria-hidden="true"></div>
+  <canvas class="fireworks" id="fireworks" aria-hidden="true"></canvas>
+  <div class="garland" aria-hidden="true">
+    <span class="strand strand--1"></span><span class="strand strand--2"></span><span class="strand strand--3"></span>
+    <span class="strand strand--4"></span><span class="strand strand--5"></span>
+  </div>
+
+  <main class="page">
+    <header class="topline"><span>DIWALI 2026</span><span>शुभ दीपावली</span></header>
+
+    <!-- 1. Welcome (personalised with ?name=… in the link) -->
+    <section class="screen screen--active" id="welcome" aria-labelledby="welcome-title">
+      <div class="eyebrow">✧ SHUBH DEEPAVALI ✧</div>
+      <h1 id="welcome-title">Wishing you a Diwali<br><em>full of light.</em></h1>
+      <p class="intro">May this festival of lights fill your home with joy,<br>your heart with peace and your year with success.</p>
+      <div class="hero-diya" aria-hidden="true">
+        <span class="flame"></span><span class="wick"></span><span class="diya-bowl"></span><span class="diya-glow"></span>
+      </div>
+      <p class="prompt">I made a little Diwali greeting for you. Come, let's celebrate together!</p>
+      <button class="button button--gold" id="beginBtn">Open your Diwali greeting <span>→</span></button>
+    </section>
+
+    <!-- 2. Rangoli -->
+    <section class="screen" id="rangoli" hidden aria-labelledby="rangoli-title">
+      <div class="eyebrow">FIRST, A RANGOLI AT YOUR DOORSTEP</div>
+      <h2 id="rangoli-title">Let's make a rangoli<br><em>for your home.</em></h2>
+      <p class="section-copy">Tap the rangoli to add each colourful layer.</p>
+      <button class="rangoli" id="rangoliBtn" aria-label="Add a layer to the rangoli">
+        <svg id="rangoliSvg" viewBox="-115 -115 230 230" aria-hidden="true">
+          <circle r="104" fill="none" stroke="rgba(255,236,200,.28)" stroke-width="1.5" stroke-dasharray="3 6"/>
+        </svg>
+      </button>
+      <p class="hint" id="rangoliHint">Tap to add colour ✨ (0 / 5)</p>
+      <button class="button button--gold is-hidden" id="diyasNext">Now, the diyas <span>→</span></button>
+    </section>
+
+    <!-- 3. Seven diyas -->
+    <section class="screen" id="diyas" hidden aria-labelledby="diyas-title">
+      <div class="eyebrow">LIGHT UP THE HOME</div>
+      <h2 id="diyas-title">Light seven diyas<br><em>for seven blessings.</em></h2>
+      <p class="section-copy">Each little flame carries a wish for you and your family.</p>
+      <div class="diya-row" id="diyaRow"></div>
+      <p class="diya-wish" id="diyaWish" aria-live="polite">Tap a diya to light it ✨</p>
+      <button class="button button--gold is-hidden" id="doorsNext">Welcome Maa Lakshmi <span>→</span></button>
+    </section>
+
+    <!-- 4. Lakshmi Pujan -->
+    <section class="screen" id="pujan" hidden aria-labelledby="pujan-title">
+      <div class="eyebrow">LAKSHMI PUJAN 🪔</div>
+      <h2 id="pujan-title">Open your doors,<br><em>Maa Lakshmi is here.</em></h2>
+
+      <div class="shrine-wrap" id="shrineWrap">
+        <div class="toran" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <button class="door-frame" id="doorBtn" aria-label="Open the doors for Maa Lakshmi">
+          <span class="shrine">
+            <span class="shrine__halo"></span>
+            <!-- To use a real picture of Maa Lakshmi, save it as lakshmi.png next to index.html -->
+            <svg class="shrine__art" viewBox="0 0 200 180" aria-hidden="true">
+              <defs>
+                <linearGradient id="petalFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe1e5"/><stop offset="1" stop-color="#e0607a"/></linearGradient>
+                <linearGradient id="petalBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc4cd"/><stop offset="1" stop-color="#b8425e"/></linearGradient>
+                <radialGradient id="coinGold"><stop offset="0" stop-color="#fff2b8"/><stop offset="1" stop-color="#d39a3a"/></radialGradient>
+              </defs>
+              <ellipse cx="100" cy="128" rx="74" ry="11" fill="#3f7a5a"/>
+              <ellipse cx="100" cy="126" rx="60" ry="7" fill="#5c9a72"/>
+              <path d="M100 122 C76 98 74 64 100 32 C126 64 124 98 100 122Z" fill="url(#petalBack)" transform="rotate(-58 100 122)"/>
+              <path d="M100 122 C76 98 74 64 100 32 C126 64 124 98 100 122Z" fill="url(#petalBack)" transform="rotate(58 100 122)"/>
+              <path d="M100 122 C78 98 77 66 100 36 C123 66 122 98 100 122Z" fill="url(#petalFront)" transform="rotate(-30 100 122)"/>
+              <path d="M100 122 C78 98 77 66 100 36 C123 66 122 98 100 122Z" fill="url(#petalFront)" transform="rotate(30 100 122)"/>
+              <path d="M100 124 C80 98 80 62 100 28 C120 62 120 98 100 124Z" fill="url(#petalFront)"/>
+              <circle cx="66" cy="152" r="12" fill="url(#coinGold)" stroke="#b97b2c"/>
+              <circle cx="100" cy="158" r="13" fill="url(#coinGold)" stroke="#b97b2c"/>
+              <circle cx="134" cy="152" r="12" fill="url(#coinGold)" stroke="#b97b2c"/>
+            </svg>
+            <img class="shrine__photo" src="lakshmi.png" alt="" onerror="this.remove()">
+          </span>
+          <span class="door door--left"><span class="door__panel"></span><span class="door__knob"></span></span>
+          <span class="door door--right"><span class="door__panel"></span><span class="door__knob"></span></span>
+        </button>
+        <div class="aarti-orbit" aria-hidden="true">
+          <span class="thali"><span class="thali__flame"></span><span class="thali__dot thali__dot--1"></span><span class="thali__dot thali__dot--2"></span></span>
+        </div>
+      </div>
+
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="footprint" viewBox="0 0 40 70">
+          <ellipse cx="20" cy="45" rx="12" ry="21"/>
+          <circle cx="8" cy="15" r="4"/><circle cx="15" cy="9" r="4.4"/><circle cx="23" cy="8" r="4.2"/>
+          <circle cx="30" cy="11" r="3.7"/><circle cx="35" cy="18" r="3.1"/>
+        </symbol>
+      </svg>
+      <div class="footprints" id="footprints" aria-hidden="true">
+        <svg style="--i:0"><use href="#footprint"/></svg><svg style="--i:1"><use href="#footprint"/></svg>
+        <svg style="--i:2"><use href="#footprint"/></svg><svg style="--i:3"><use href="#footprint"/></svg>
+        <svg style="--i:4"><use href="#footprint"/></svg><svg style="--i:5"><use href="#footprint"/></svg>
+      </div>
+
+      <p class="mantra is-hidden" id="mantra">ॐ श्रीं महालक्ष्म्यै नमः</p>
+      <p class="hint" id="pujanHint">Tap the doors to welcome her 🙏</p>
+      <button class="button button--gold is-hidden" id="aartiBtn">Do the aarti 🔔</button>
+      <button class="button button--gold is-hidden" id="daysNext">The five days of Diwali <span>→</span></button>
+    </section>
+
+    <!-- 5. Five days of Diwali: flip cards -->
+    <section class="screen" id="days" hidden aria-labelledby="days-title">
+      <div class="eyebrow">FIVE DAYS, FIVE BLESSINGS</div>
+      <h2 id="days-title">The five days<br><em>of Diwali.</em></h2>
+      <p class="section-copy">Tap each card to reveal a wish for every day of the festival.</p>
+      <div class="day-grid" id="dayGrid"></div>
+      <p class="hint" id="daysHint">Tap all five cards ✨</p>
+      <button class="button button--gold is-hidden" id="letterNext">A note for you <span>→</span></button>
+    </section>
+
+    <!-- 6. Greeting note -->
+    <section class="screen" id="letter" hidden aria-labelledby="letter-title">
+      <div class="eyebrow">A DIWALI NOTE</div>
+      <article class="letter-card">
+        <div class="letter-card__ornament">❧</div>
+        <h2 id="letter-title">Dear loved ones,</h2>
+        <div class="typed-message" id="typedMessage" aria-live="polite"></div>
+        <div class="letter-card__sign">With love and best wishes,<br><strong>Rahul Rao & Family🪔</strong></div>
+      </article>
+      <button class="button button--gold is-hidden" id="finaleNext">Let's light up the sky <span>→</span></button>
+    </section>
+
+    <!-- 7. Fireworks finale -->
+    <section class="screen" id="finale" hidden aria-labelledby="final-title">
+      <div class="final-diyas" aria-hidden="true"><span>🪔</span><span>🪔</span><span>🪔</span></div>
+      <div class="eyebrow" id="finaleEyebrow">HAPPY DIWALI</div>
+      <h2 id="final-title">Happy Diwali and a<br><em>prosperous New Year!</em></h2>
+      <p class="final-message">May this Diwali bring good health, happiness and success to you and your whole family. Shubh Deepavali! 🙏</p>
+      <div class="signature">With love,<br><strong>Rahul Rao & Family</strong></div>
+      <p class="hint finale-hint">Tap the sky for fireworks 🎆 — no smoke, no noise!</p>
+
+      <div class="final-actions">
+        <button class="button button--gold" id="replayBtn">Experience it again ↻</button>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">A LITTLE DIWALI MAGIC • MADE WITH LOVE</footer>
+  <script>
+/* =========================================================
+   HAPPY DIWALI — greeting for family, friends and relatives
+   ========================================================= */
+const screens = [...document.querySelectorAll(".screen")];
+const $ = (id) => document.getElementById(id);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Personalise with ?name=Mama in the link */
+const guestName = (new URLSearchParams(window.location.search).get("name") || "").trim().slice(0, 30);
+if (guestName) {
+  $("welcome-title").innerHTML = "Happy Diwali,<br><em></em>";
+  $("welcome-title").querySelector("em").textContent = `${guestName}! 🪔`;
+  $("letter-title").textContent = `Dear ${guestName},`;
+  $("finaleEyebrow").textContent = `HAPPY DIWALI, ${guestName.toUpperCase()}`;
+  document.title = `Happy Diwali, ${guestName}! 🪔`;
+}
+
+const messageText = `Wishing you and your whole family a very Happy Diwali!
+
+May the light of every diya fill your home with happiness, the sweetness of every laddoo and karanji fill your days with joy, and the blessings of Maa Lakshmi bring prosperity, good health and peace to everyone you love.
+
+Thank you for always being a part of my life. Festivals feel complete only because of people like you.
+
+Let's keep celebrating together — this year and every year. 🪔`;
+
+const diyaWishes = [
+  "for good health for everyone at home 🌿",
+  "for happiness that stays all year 😊",
+  "for prosperity and abundance 💰",
+  "for success in everything you do 🌟",
+  "for peace and harmony in the family 🕊️",
+  "for sweet moments with loved ones 🍬",
+  "and one for many more Diwalis together 🪔"
+];
+
+const diwaliDays = [
+  { name: "Dhanteras", icon: "🪙", wish: "May your home be blessed with wealth and good health.", tag: "Shubh Dhanteras" },
+  { name: "Narak Chaturdashi", icon: "🌅", wish: "May every darkness and worry leave your life for good.", tag: "Choti Diwali" },
+  { name: "Lakshmi Pujan", icon: "🪔", wish: "May Maa Lakshmi fill your home with prosperity and peace.", tag: "Shubh Deepavali" },
+  { name: "Padwa", icon: "🌸", wish: "May the new year bring fresh beginnings and success.", tag: "Balipratipada" },
+  { name: "Bhaubeej", icon: "🎁", wish: "May the bond between brothers and sisters stay strong forever.", tag: "Bhai Dooj" }
+];
+
+let currentScreen = "welcome";
+let typingTimer = null;
+let hasTyped = false;
+let rangoliStep = 0;
+let litCount = 0;
+let aartiTimers = [];
+let fireworkInterval = null;
+
+function showScreen(id) {
+  screens.forEach((s) => {
+    const active = s.id === id;
+    s.classList.toggle("screen--active", active);
+    s.hidden = !active; /* hard-hide every other screen, even if the CSS doesn't load */
+  });
+  currentScreen = id;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function makeSparkles(count = 40) {
+  for (let i = 0; i < count; i += 1) {
+    const dot = document.createElement("span");
+    dot.className = "sparkle";
+    dot.style.left = `${Math.random() * 100}%`;
+    dot.style.top = `${Math.random() * 100}%`;
+    dot.style.animationDelay = `${Math.random() * 7}s`;
+    dot.style.animationDuration = `${5 + Math.random() * 6}s`;
+    $("sparkles").appendChild(dot);
+  }
+}
+
+/* Generic particles: sparkles, coins, petals */
+function spawnParticles(x, y, {
+  count = 20, symbols = ["✦"], colors = ["#ffd58d"], spreadX = 140,
+  dyMin = -220, dyMax = -80, size = [12, 24], duration = 1800, startSpread = 0
+} = {}) {
+  if (reduceMotion) count = Math.ceil(count / 3);
+  for (let i = 0; i < count; i += 1) {
+    const el = document.createElement("span");
+    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+    const s = size[0] + Math.random() * (size[1] - size[0]);
+    el.className = "particle";
+    if (symbol === "coin") {
+      el.classList.add("particle--coin");
+      el.style.width = `${s}px`;
+      el.style.height = `${s}px`;
+    } else {
+      el.textContent = symbol;
+      el.style.fontSize = `${s}px`;
+      el.style.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    el.style.left = `${x + (Math.random() - .5) * startSpread}px`;
+    el.style.top = `${y}px`;
+    el.style.transition = `transform ${duration}ms cubic-bezier(.2,.6,.3,1), opacity ${duration}ms ease-in`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const dx = (Math.random() - .5) * spreadX;
+      const dy = dyMin + Math.random() * (dyMax - dyMin);
+      el.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.random() * 360 - 180}deg)`;
+      el.style.opacity = "0";
+    }));
+    window.setTimeout(() => el.remove(), duration + 200);
+  }
+}
+
+function burstHearts(amount = 18) {
+  spawnParticles(window.innerWidth / 2, window.innerHeight, {
+    count: amount, symbols: ["✦", "✧", "❀", "✿"], colors: ["#ffd58d", "#ffb02e", "#f2aaa2"],
+    spreadX: 120, startSpread: window.innerWidth * .8, dyMin: -600, dyMax: -250, size: [14, 36], duration: 3200
+  });
+}
+
+function petalShower() {
+  spawnParticles(window.innerWidth / 2, -30, {
+    count: 26, symbols: ["❀", "✿", "❁"], colors: ["#ffb02e", "#ff7b2e", "#ffd43b", "#f783ac"],
+    spreadX: 160, startSpread: window.innerWidth, dyMin: window.innerHeight * .6, dyMax: window.innerHeight + 60,
+    size: [14, 26], duration: 4200
+  });
+}
+
+/* =========================================================
+   1. Welcome
+   ========================================================= */
+$("beginBtn").addEventListener("click", () => showScreen("rangoli"));
+
+/* =========================================================
+   2. Rangoli — built in SVG, revealed one layer per tap
+   ========================================================= */
+const SVG_NS = "http://www.w3.org/2000/svg";
+const rangoliSvg = $("rangoliSvg");
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+function petalRing(group, d, count, colors, offset = 0) {
+  for (let i = 0; i < count; i += 1) {
+    group.appendChild(svgEl("path", {
+      d, fill: colors[i % colors.length], transform: `rotate(${offset + (360 / count) * i})`
+    }));
+  }
+}
+
+const rangoliLayers = [];
+function buildRangoli() {
+  const builders = [
+    (g) => { // centre
+      g.appendChild(svgEl("circle", { r: 15, fill: "#ffd43b" }));
+      g.appendChild(svgEl("circle", { r: 8, fill: "#e64980" }));
+      for (let i = 0; i < 8; i += 1) {
+        const a = (Math.PI / 4) * i;
+        g.appendChild(svgEl("circle", { cx: Math.cos(a) * 21, cy: Math.sin(a) * 21, r: 2.6, fill: "#fff4dc" }));
+      }
+    },
+    (g) => petalRing(g, "M0 -16 C-13 -28 -12 -44 0 -54 C12 -44 13 -28 0 -16Z", 8, ["#e64980", "#f06595"]),
+    (g) => petalRing(g, "M0 -22 C-17 -42 -15 -64 0 -78 C15 -64 17 -42 0 -22Z", 8, ["#ff922b", "#fd7e14"], 22.5),
+    (g) => petalRing(g, "M0 -62 C-7 -71 -6 -83 0 -92 C6 -83 7 -71 0 -62Z", 16, ["#7950f2", "#22b8cf"]),
+    (g) => {
+      g.appendChild(svgEl("circle", { r: 100, fill: "none", stroke: "#fff4dc", "stroke-width": 4, "stroke-dasharray": "0.1 9", "stroke-linecap": "round" }));
+      g.appendChild(svgEl("circle", { r: 106, fill: "none", stroke: "#f6c978", "stroke-width": 1.5 }));
+      for (let i = 0; i < 8; i += 1) {
+        const a = (Math.PI / 4) * i + Math.PI / 8;
+        g.appendChild(svgEl("circle", { cx: Math.cos(a) * 100, cy: Math.sin(a) * 100, r: 6, fill: "#ffd43b", stroke: "#e8590c", "stroke-width": 2 }));
+      }
+    }
+  ];
+  const groups = builders.map((build) => {
+    const g = svgEl("g", { class: "rangoli-layer" });
+    build(g);
+    return g;
+  });
+  /* outer layers sit underneath inner ones, so append in reverse */
+  [...groups].reverse().forEach((g) => rangoliSvg.appendChild(g));
+  rangoliLayers.push(...groups);
+}
+
+$("rangoliBtn").addEventListener("click", () => {
+  if (rangoliStep >= rangoliLayers.length) return;
+  rangoliLayers[rangoliStep].classList.add("is-on");
+  rangoliStep += 1;
+  const rect = $("rangoliBtn").getBoundingClientRect();
+  spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, {
+    count: 10, symbols: ["✦", "✧", "•"], colors: ["#ffd43b", "#f783ac", "#ff922b", "#74c0fc"], spreadX: rect.width, dyMin: -rect.height * .6, dyMax: rect.height * .4
+  });
+  if (rangoliStep < rangoliLayers.length) {
+    $("rangoliHint").textContent = `Tap to add colour ✨ (${rangoliStep} / ${rangoliLayers.length})`;
+  } else {
+    $("rangoliBtn").classList.add("is-complete");
+    $("rangoliHint").textContent = "Beautiful. Maa Lakshmi will love it. 🌸";
+    $("diyasNext").classList.remove("is-hidden");
+  }
+});
+
+$("diyasNext").addEventListener("click", () => showScreen("diyas"));
+
+/* =========================================================
+   3. Seven diyas — the whole page warms up as they are lit
+   ========================================================= */
+function buildDiyas() {
+  diyaWishes.forEach((wish, i) => {
+    const b = document.createElement("button");
+    b.className = "mini-diya";
+    b.setAttribute("aria-label", `Light diya ${i + 1}`);
+    b.innerHTML = '<span class="mini-diya__halo"></span><span class="mini-diya__flame"></span><span class="mini-diya__bowl"></span>';
+    b.addEventListener("click", () => {
+      if (b.classList.contains("is-lit")) return;
+      b.classList.add("is-lit");
+      litCount += 1;
+      document.documentElement.style.setProperty("--glow", (litCount / diyaWishes.length).toFixed(2));
+      $("diyaWish").textContent = `This one is ${wish}`;
+      const r = b.getBoundingClientRect();
+      spawnParticles(r.left + r.width / 2, r.top + 20, { count: 8, colors: ["#ffd58d", "#ffb36b"], spreadX: 60, dyMin: -90, dyMax: -30, size: [8, 16], duration: 1200 });
+      if (litCount === diyaWishes.length) {
+        window.setTimeout(() => {
+          $("diyaWish").textContent = "Every corner is glowing now. 🪔";
+          $("doorsNext").classList.remove("is-hidden");
+        }, 1400);
+      }
+    });
+    $("diyaRow").appendChild(b);
+  });
+}
+
+$("doorsNext").addEventListener("click", () => showScreen("pujan"));
+
+/* =========================================================
+   4. Lakshmi Pujan — open the doors, then aarti with a bell
+   ========================================================= */
+$("doorBtn").addEventListener("click", () => {
+  const door = $("doorBtn");
+  if (door.classList.contains("is-open")) return;
+  door.classList.add("is-open");
+  $("footprints").classList.add("is-walking");
+  $("pujanHint").textContent = "Maa Lakshmi has entered your home. 🪷";
+  const r = door.getBoundingClientRect();
+  window.setTimeout(() => {
+    spawnParticles(r.left + r.width / 2, r.top - 20, {
+      count: 28, symbols: ["coin"], spreadX: 140, startSpread: r.width * 1.3,
+      dyMin: 200, dyMax: r.height + 180, size: [12, 20], duration: 2400
+    });
+  }, 900);
+  window.setTimeout(() => {
+    $("mantra").classList.remove("is-hidden");
+    $("aartiBtn").classList.remove("is-hidden");
+  }, 2200);
+});
+
+/* A soft temple bell, synthesised so no audio file is needed */
+let audioCtx = null;
+function ringBell(when = 0) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime + when;
+    [[1, .35], [2.76, .18], [5.4, .09], [8.93, .05]].forEach(([ratio, amp]) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 620 * ratio;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(amp, t + .006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4 / ratio + .4);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 3);
+    });
+  } catch (e) { /* sound is optional */ }
+}
+
+$("aartiBtn").addEventListener("click", () => {
+  $("aartiBtn").classList.add("is-hidden");
+  $("shrineWrap").classList.add("is-aarti");
+  $("pujanHint").textContent = "Om Jai Lakshmi Mata… 🔔";
+  for (let i = 0; i < 9; i += 1) ringBell(i * .8);
+  petalShower();
+  aartiTimers.push(window.setTimeout(petalShower, 2400));
+  aartiTimers.push(window.setTimeout(petalShower, 4800));
+  aartiTimers.push(window.setTimeout(() => {
+    $("shrineWrap").classList.remove("is-aarti");
+    $("pujanHint").textContent = "May her blessings stay with you always. 🙏";
+    $("daysNext").classList.remove("is-hidden");
+  }, 7300));
+});
+
+$("daysNext").addEventListener("click", () => showScreen("days"));
+
+/* =========================================================
+   5. Five days of Diwali — flip cards
+   ========================================================= */
+let flippedCount = 0;
+function buildDays() {
+  diwaliDays.forEach((day, i) => {
+    const card = document.createElement("button");
+    card.className = "day-card";
+    card.setAttribute("aria-label", `Day ${i + 1}: ${day.name}`);
+    card.innerHTML = `<span class="day-card__inner">
+        <span class="day-card__face day-card__front">
+          <span class="day-card__num">DAY ${i + 1}</span>
+          <span class="day-card__icon">${day.icon}</span>
+          <span class="day-card__name">${day.name}</span>
+        </span>
+        <span class="day-card__face day-card__back">
+          <strong>${day.tag}</strong>
+          <span>${day.wish}</span>
+        </span>
+      </span>`;
+    card.addEventListener("click", () => {
+      if (card.classList.contains("is-flipped")) return;
+      card.classList.add("is-flipped");
+      flippedCount += 1;
+      const r = card.getBoundingClientRect();
+      spawnParticles(r.left + r.width / 2, r.top + r.height / 2, { count: 8, colors: ["#ffd58d", "#f783ac"], spreadX: 120, dyMin: -120, dyMax: -40, size: [8, 16], duration: 1200 });
+      if (flippedCount === diwaliDays.length) {
+        $("daysHint").textContent = "Five days of light, all for you and your family. 🙏";
+        $("letterNext").classList.remove("is-hidden");
+      } else {
+        $("daysHint").textContent = `${flippedCount} of 5 revealed ✨`;
+      }
+    });
+    $("dayGrid").appendChild(card);
+  });
+}
+
+/* =========================================================
+   6. Letter
+   ========================================================= */
+function typeLetter() {
+  const target = $("typedMessage");
+  if (hasTyped) {
+    target.textContent = messageText;
+    $("finaleNext").classList.remove("is-hidden");
+    return;
+  }
+  target.textContent = "";
+  let index = 0;
+  const tick = () => {
+    target.textContent += messageText.charAt(index);
+    index += 1;
+    if (index < messageText.length) {
+      typingTimer = window.setTimeout(tick, 24);
+    } else {
+      hasTyped = true;
+      $("finaleNext").classList.remove("is-hidden");
+    }
+  };
+  tick();
+}
+
+$("letterNext").addEventListener("click", () => {
+  showScreen("letter");
+  typeLetter();
+});
+
+/* =========================================================
+   7. Fireworks finale — canvas, tap anywhere to launch
+   ========================================================= */
+const canvas = $("fireworks");
+const ctx = canvas.getContext("2d");
+const rockets = [];
+const sparks = [];
+const fireColors = ["#ffd43b", "#ff922b", "#f783ac", "#ff6b6b", "#74c0fc", "#b197fc", "#fff4dc", "#8ce99a"];
+let fwRunning = false;
+
+function resizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function launchFirework(x, y) {
+  rockets.push({ x, y: window.innerHeight + 10, ty: y, color: fireColors[Math.floor(Math.random() * fireColors.length)] });
+  if (!fwRunning) { fwRunning = true; requestAnimationFrame(fireworkLoop); }
+}
+
+function explode(x, y, color) {
+  const n = reduceMotion ? 24 : 70;
+  const second = fireColors[Math.floor(Math.random() * fireColors.length)];
+  for (let i = 0; i < n; i += 1) {
+    const angle = (Math.PI * 2 * i) / n + Math.random() * .2;
+    const speed = 1.2 + Math.random() * 3.6;
+    sparks.push({
+      x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 1, decay: .011 + Math.random() * .012, size: 1.4 + Math.random() * 1.6,
+      color: Math.random() > .3 ? color : second
+    });
+  }
+}
+
+function fireworkLoop() {
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  for (let i = rockets.length - 1; i >= 0; i -= 1) {
+    const r = rockets[i];
+    const prevY = r.y;
+    r.y += (r.ty - r.y) * .075 - 2;
+    ctx.strokeStyle = "rgba(255, 230, 180, .8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(r.x, prevY + 12); ctx.lineTo(r.x, r.y); ctx.stroke();
+    if (r.y <= r.ty + 4) { explode(r.x, r.y, r.color); rockets.splice(i, 1); }
+  }
+  for (let i = sparks.length - 1; i >= 0; i -= 1) {
+    const s = sparks[i];
+    s.vx *= .985; s.vy = s.vy * .985 + .035;
+    s.x += s.vx; s.y += s.vy; s.life -= s.decay;
+    if (s.life <= 0) { sparks.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.max(s.life, 0);
+    ctx.fillStyle = s.color;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if (rockets.length || sparks.length) requestAnimationFrame(fireworkLoop);
+  else { fwRunning = false; ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); }
+}
+
+function randomFirework() {
+  launchFirework(window.innerWidth * (.15 + Math.random() * .7), window.innerHeight * (.12 + Math.random() * .35));
+}
+
+$("finaleNext").addEventListener("click", () => {
+  showScreen("finale");
+  burstHearts(24);
+  [0, 500, 1100].forEach((t) => window.setTimeout(randomFirework, t));
+  fireworkInterval = window.setInterval(randomFirework, 2600);
+});
+
+document.addEventListener("click", (event) => {
+  if (currentScreen !== "finale" || event.target.closest("button")) return;
+  launchFirework(event.clientX, event.clientY);
+});
+
+/* =========================================================
+   Replay — reset everything
+   ========================================================= */
+$("replayBtn").addEventListener("click", () => {
+  window.clearInterval(fireworkInterval);
+  aartiTimers.forEach(window.clearTimeout); aartiTimers = [];
+  if (typingTimer) window.clearTimeout(typingTimer);
+  hasTyped = false;
+  $("typedMessage").textContent = "";
+  $("finaleNext").classList.add("is-hidden");
+
+  rangoliStep = 0;
+  rangoliLayers.forEach((g) => g.classList.remove("is-on"));
+  $("rangoliBtn").classList.remove("is-complete");
+  $("rangoliHint").textContent = `Tap to add colour ✨ (0 / ${rangoliLayers.length})`;
+  $("diyasNext").classList.add("is-hidden");
+
+  litCount = 0;
+  document.documentElement.style.setProperty("--glow", "0");
+  document.querySelectorAll(".mini-diya").forEach((d) => d.classList.remove("is-lit"));
+  $("diyaWish").textContent = "Tap a diya to light it ✨";
+  $("doorsNext").classList.add("is-hidden");
+
+  $("doorBtn").classList.remove("is-open");
+  $("shrineWrap").classList.remove("is-aarti");
+  $("footprints").classList.remove("is-walking");
+  $("mantra").classList.add("is-hidden");
+  $("aartiBtn").classList.add("is-hidden");
+  $("daysNext").classList.add("is-hidden");
+  $("letterNext").classList.add("is-hidden");
+  flippedCount = 0;
+  document.querySelectorAll(".day-card").forEach((c) => c.classList.remove("is-flipped"));
+  $("daysHint").textContent = "Tap all five cards ✨";
+  $("pujanHint").textContent = "Tap the doors to welcome her 🙏";
+
+  showScreen("welcome");
+});
+
+/* =========================================================
+   Init
+   ========================================================= */
+showScreen("welcome");
+makeSparkles();
+buildRangoli();
+buildDiyas();
+buildDays();
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+  </script>
+</body>
+</html>
